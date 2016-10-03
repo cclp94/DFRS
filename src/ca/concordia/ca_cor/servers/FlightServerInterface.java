@@ -11,6 +11,6 @@ public interface FlightServerInterface extends Remote {
 	
 	public String getBookledFlightCount(int recordType)  throws RemoteException;
 	
-	public void editFlightRecord(String recordID, String fildName, String newValue)  throws RemoteException;
+	public String editFlightRecord(String recordID, String fildName, String newValue)  throws RemoteException;
 
 }

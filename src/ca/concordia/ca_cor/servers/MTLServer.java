@@ -1,57 +1,47 @@
 package ca.concordia.ca_cor.servers;
 
-import java.rmi.Remote;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.ExportException;
-import java.rmi.server.UnicastRemoteObject;
-
 import ca.concordia.ca_cor.models.FlightRecord;
 
-public class MTLServer implements FlightServerInterface {
-
-	@Override
-	public String bookFlight(String firstName, String lastName, String address, String tel, String dest, String date,
-			int flightClass) {
-				return date;
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getBookledFlightCount(int recordType) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void editFlightRecord(String recordID, String fildName, String newValue) {
-		// TODO Auto-generated method stub
-
-	}
+public class MTLServer extends FlightServer {
+	static final int UDP_PORT = 2257;
 	
-	public void exportServer() throws Exception {
-		Remote obj = UnicastRemoteObject.exportObject(this, 1099);
-		Registry reg = null;
-		try{
-			reg = LocateRegistry.createRegistry(1099);
-
-		}catch(ExportException e){
-			reg = LocateRegistry.getRegistry(1099);
+	public MTLServer(){
+		super();
+		super.acronym = "mtl";
+		super.RMIPort = 1096;
+		try {
+			this.exportServer();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		reg.bind("mtl", obj);
 	}
 	
 	public static void main(String args[]){
+		Thread thread = null;
 		try{
-			(new MTLServer()).exportServer();
-			FlightRecord record = FlightRecord.getInstance();
+			MTLServer server = new MTLServer();
 			System.out.println("Montreal Server Running");
 			System.out.println("Flights Available: ");
-			System.out.println(record);
+			System.out.println(server.flightRecord);
+			thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					server.setupUDPServer(UDP_PORT);
+				}
+			});
+			thread.start();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	public void createInitialRecord(FlightRecord f){
+		f.add("mtl", "iad", "2016/10/03", 30, 10, 5);
+		f.add("mtl", "del", "2016/10/03", 30, 10, 5);
+		f.add("mtl", "iad", "2016/10/04", 30, 10, 5);
+		f.add("mtl", "del", "2016/10/04", 30, 10, 5);
+		f.add("mtl", "iad", "2016/10/05", 30, 10, 5);
+		f.add("mtl", "del", "2016/10/05", 30, 10, 5);
 	}
 
 }
